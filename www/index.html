@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="儿童赛车">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="icon" href="icons/icon-192x192.png" type="image/png">
+    <title>儿童赛车游戏</title>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B35',
+                        secondary: '#4CB9E7',
+                        accent: '#FFBE0B',
+                        success: '#FB5607',
+                        background: '#FFE5D9',
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .text-shadow-lg {
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .btn-bounce:active {
+                transform: scale(0.95);
+            }
+            .car-shadow {
+                filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
+            }
+            .obstacle-shadow {
+                filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+            }
+            .powerup-shadow {
+                filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2)) drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.8));
+            }
+        }
+    </style>
+    <style>
+        body {
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        canvas {
+            display: block;
+            background-color: #87CEEB;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease;
+        }
+        
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .btn {
+            transition: all 0.2s ease;
+            transform-origin: center;
+            min-height: 56px;
+            min-width: 56px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .car-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .car-option:hover {
+            transform: translateY(-10px) scale(1.1);
+        }
+        
+        .car-option.selected {
+            border: 4px solid #FFBE0B;
+            transform: translateY(-10px) scale(1.1);
+        }
+        
+        .star {
+            transition: all 0.3s ease;
+        }
+        
+        .star.filled {
+            color: #FFBE0B;
+            transform: scale(1.2);
+        }
+        
+        .star.empty {
+            color: #CCCCCC;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confetti-fall 3s ease-in-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .rain {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.5);
+            width: 2px;
+            height: 20px;
+            animation: rain-fall linear infinite;
+        }
+        
+        @keyframes rain-fall {
+            0% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+        
+        .cloud {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            animation: cloud-move linear infinite;
+        }
+        
+        @keyframes cloud-move {
+            0% {
+                transform: translateX(-100px);
+            }
+            100% {
+                transform: translateX(100vw);
+            }
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-effect 1s ease-out forwards;
+        }
+        
+        @keyframes particle-effect {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .powerup-effect {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: powerup-pulse 1s ease-out forwards;
+        }
+        
+        @keyframes powerup-pulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+        
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem !important;
+            }
+            
+            h2 {
+                font-size: 2rem !important;
+            }
+            
+            .btn {
+                font-size: 1.25rem !important;
+                padding: 0.75rem 1.5rem !important;
+            }
+            
+            .car-option img {
+                width: 120px !important;
+                height: 120px !important;
+            }
+            
+            #controls {
+                padding: 1rem;
+            }
+            
+            #left-btn, #right-btn {
+                width: 60px !important;
+                height: 60px !important;
+                font-size: 1.5rem !important;
+            }
+            
+            #game-ui {
+                padding: 1rem;
+            }
+            
+            #game-ui span {
+                font-size: 0.9rem !important;
+            }
+        }
+        
+        /* Handle notch and safe area */
+        .safe-area-inset {
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        #game-ui {
+            padding-top: calc(1rem + env(safe-area-inset-top));
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        }
+        
+        #controls {
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        }
+    </style>
+</head>
+<body class="bg-background font-sans">
+    <div class="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen flex flex-col items-center justify-center bg-background safe-area-inset">
+            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/9980c193e6044875ab2aa8dc41d0ab8f~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=86FwZltojc209rE4VHZyaQHEJ0o%3D" 
+                 alt="Racing Car" 
+                 class="w-48 h-48 object-contain animate-bounce-slow mb-8">
+            <h1 class="text-5xl font-bold text-primary mb-4 text-shadow">儿童赛车游戏</h1>
+            <div class="w-64 h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div id="loading-bar" class="h-full bg-secondary" style="width: 0%"></div>
+            </div>
+            <p id="loading-text" class="mt-4 text-lg text-gray-600">Loading game assets...</p>
+        </div>
+
+        <!-- Main Menu Screen -->
+        <div id="main-menu" class="screen hidden flex flex-col items-center justify-center bg-cover bg-center safe-area-inset" style="background-image: url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/9cdbb912f97c43ab86a4b49f5506646c~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=3ZrSUxdgDgnQm8HevTwAt4SXots%3D');">
+            <div class="bg-white bg-opacity-80 rounded-3xl p-8 shadow-lg max-w-md w-full">
+                <h1 class="text-5xl font-bold text-primary mb-8 text-center text-shadow">儿童赛车</h1>
+                <div class="flex flex-col gap-4">
+                    <button id="start-game-btn" class="btn btn-bounce bg-primary hover:bg-opacity-90 text-white text-2xl py-4 px-8 rounded-full shadow-lg flex items-center justify-center gap-2 animate-pulse" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3); border: 4px solid #FFBE0B; box-shadow: 0 8px 16px rgba(0,0,0,0.2), 0 0 20px rgba(255, 190, 11, 0.5);">
+                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4c7a4eccaa8944b085062681d5310d17~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260226155542CD7EBB8E31F3B981138D&rrcfp=f06b921b&x-expires=1774685017&x-signature=ac8WDk63VEeVAuA3GmUDHnRdZ%2F4%3D" alt="赛车" class="w-8 h-8 mr-2">
+                        开始比赛
+                    </button>
+                    <button id="garage-btn" class="btn btn-bounce bg-secondary hover:bg-opacity-90 text-white text-2xl py-4 px-8 rounded-full shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa fa-car text-2xl"></i>
+                        我的车库
+                    </button>
+                    <button id="rewards-btn" class="btn btn-bounce bg-accent hover:bg-opacity-90 text-white text-2xl py-4 px-8 rounded-full shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa fa-gift text-2xl"></i>
+                        奖励
+                    </button>
+                    <button id="settings-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-2xl py-4 px-8 rounded-full shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa fa-cog text-2xl"></i>
+                        设置
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Car Selection Screen -->
+        <div id="car-selection" class="screen hidden flex flex-col items-center justify-center bg-background safe-area-inset">
+            <h2 class="text-4xl font-bold text-primary mb-6 text-shadow">选择你的赛车</h2>
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="car-option selected" data-car="0">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Red Car" 
+                         class="w-40 h-40 object-contain car-shadow">
+                    <p class="text-center mt-2 font-bold">Red Racer</p>
+                </div>
+                <div class="car-option" data-car="1">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Yellow Car" 
+                         class="w-40 h-40 object-contain car-shadow">
+                    <p class="text-center mt-2 font-bold">Yellow Blitz</p>
+                </div>
+                <div class="car-option" data-car="2">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Green Car" 
+                         class="w-40 h-40 object-contain car-shadow">
+                    <p class="text-center mt-2 font-bold">Green Machine</p>
+                </div>
+                <div class="car-option" data-car="3">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Blue Car" 
+                         class="w-40 h-40 object-contain car-shadow">
+                    <p class="text-center mt-2 font-bold">Blue Bolt</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="back-to-menu-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                    Back
+                </button>
+                <button id="start-race-btn" class="btn btn-bounce bg-success hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                    Start Race!
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-ui" class="absolute top-0 left-0 w-full p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2 bg-white bg-opacity-70 rounded-full px-4 py-2 shadow-md">
+                    <i class="fa fa-tachometer text-primary text-xl"></i>
+                    <span id="speed-display" class="font-bold text-lg">0 km/h</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white bg-opacity-70 rounded-full px-4 py-2 shadow-md">
+                    <i class="fa fa-star text-accent text-xl"></i>
+                    <span id="score-display" class="font-bold text-lg">0</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white bg-opacity-70 rounded-full px-4 py-2 shadow-md">
+                    <i class="fa fa-clock-o text-secondary text-xl"></i>
+                    <span id="time-display" class="font-bold text-lg">00:00</span>
+                </div>
+            </div>
+            <div id="controls" class="absolute bottom-0 left-0 w-full p-4 flex justify-between">
+                <button id="left-btn" class="btn bg-gray-800 bg-opacity-50 hover:bg-opacity-70 text-white text-4xl w-16 h-16 rounded-full shadow-lg">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <button id="right-btn" class="btn bg-gray-800 bg-opacity-50 hover:bg-opacity-70 text-white text-4xl w-16 h-16 rounded-full shadow-lg">
+                    <i class="fa fa-arrow-right"></i>
+                </button>
+            </div>
+            <div id="powerup-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-80 rounded-full p-4 shadow-lg text-center">
+                <img id="powerup-icon" src="" alt="Power-up" class="w-16 h-16 mx-auto">
+                <p id="powerup-text" class="font-bold mt-2">Speed Boost!</p>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over" class="screen hidden flex flex-col items-center justify-center bg-cover bg-center safe-area-inset" style="background-image: url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/9cdbb912f97c43ab86a4b49f5506646c~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D');">
+            <div class="bg-white bg-opacity-90 rounded-3xl p-8 shadow-lg max-w-md w-full text-center">
+                <h2 class="text-5xl font-bold text-primary mb-4 text-shadow">Game Over!</h2>
+                <div id="stars-container" class="flex justify-center gap-2 mb-6">
+                    <i class="fa fa-star star text-4xl"></i>
+                    <i class="fa fa-star star text-4xl"></i>
+                    <i class="fa fa-star star text-4xl"></i>
+                    <i class="fa fa-star star text-4xl"></i>
+                    <i class="fa fa-star star text-4xl"></i>
+                </div>
+                <div class="mb-6">
+                    <p class="text-xl mb-2">Score: <span id="final-score" class="font-bold">0</span></p>
+                    <p class="text-xl mb-2">Time: <span id="final-time" class="font-bold">00:00</span></p>
+                    <p class="text-xl">Reward: <span id="final-reward" class="font-bold text-accent">0 coins</span></p>
+                </div>
+                <div id="new-unlock" class="hidden mb-6 p-4 bg-accent bg-opacity-20 rounded-xl">
+                    <p class="font-bold text-lg text-accent">🎉 New car unlocked! 🎉</p>
+                    <img id="unlocked-car-img" src="" alt="New Car" class="w-32 h-32 mx-auto mt-2">
+                </div>
+                <div class="flex gap-4 justify-center">
+                    <button id="play-again-btn" class="btn btn-bounce bg-primary hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                        Play Again
+                    </button>
+                    <button id="back-to-menu-2-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                        Main Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Garage Screen -->
+        <div id="garage-screen" class="screen hidden flex flex-col items-center justify-center bg-background p-4 safe-area-inset">
+            <h2 class="text-4xl font-bold text-primary mb-6 text-shadow">My Garage</h2>
+            <div class="grid grid-cols-2 gap-6 mb-8 max-w-2xl">
+                <div class="car-card bg-white rounded-2xl p-4 shadow-lg text-center">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Red Car" 
+                         class="w-32 h-32 mx-auto car-shadow">
+                    <h3 class="font-bold mt-2">Red Racer</h3>
+                    <p class="text-sm text-gray-600">Speed: 🏎️🏎️🏎️</p>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">Owned</span>
+                </div>
+                <div class="car-card bg-white rounded-2xl p-4 shadow-lg text-center">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Yellow Car" 
+                         class="w-32 h-32 mx-auto car-shadow">
+                    <h3 class="font-bold mt-2">Yellow Blitz</h3>
+                    <p class="text-sm text-gray-600">Speed: 🏎️🏎️🏎️🏎️</p>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">Owned</span>
+                </div>
+                <div class="car-card bg-white rounded-2xl p-4 shadow-lg text-center">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Green Car" 
+                         class="w-32 h-32 mx-auto car-shadow opacity-50">
+                    <h3 class="font-bold mt-2">Green Machine</h3>
+                    <p class="text-sm text-gray-600">Speed: 🏎️🏎️🏎️🏎️🏎️</p>
+                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">500 coins</span>
+                </div>
+                <div class="car-card bg-white rounded-2xl p-4 shadow-lg text-center">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D" 
+                         alt="Blue Car" 
+                         class="w-32 h-32 mx-auto car-shadow opacity-50">
+                    <h3 class="font-bold mt-2">Blue Bolt</h3>
+                    <p class="text-sm text-gray-600">Speed: 🏎️🏎️🏎️🏎️</p>
+                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">300 coins</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+                <i class="fa fa-coins text-accent text-2xl"></i>
+                <span id="coins-display" class="font-bold text-xl">0 coins</span>
+            </div>
+            <button id="back-from-garage-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                Back to Menu
+            </button>
+        </div>
+
+        <!-- Rewards Screen -->
+        <div id="rewards-screen" class="screen hidden flex flex-col items-center justify-center bg-background p-4 safe-area-inset">
+            <h2 class="text-4xl font-bold text-primary mb-6 text-shadow">我的奖励</h2>
+            <div class="bg-white rounded-2xl p-6 shadow-lg max-w-md w-full mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa fa-trophy text-accent text-2xl"></i>
+                        <h3 class="font-bold text-xl">Best Time</h3>
+                    </div>
+                    <span id="best-time" class="font-bold text-lg">--:--</span>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa fa-star text-accent text-2xl"></i>
+                        <h3 class="font-bold text-xl">Total Stars</h3>
+                    </div>
+                    <span id="total-stars" class="font-bold text-lg">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fa fa-flag-checkered text-accent text-2xl"></i>
+                        <h3 class="font-bold text-xl">Races Completed</h3>
+                    </div>
+                    <span id="races-completed" class="font-bold text-lg">0</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="achievement bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="w-16 h-16 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-2">
+                        <i class="fa fa-star text-accent text-3xl"></i>
+                    </div>
+                    <h4 class="font-bold">First Win</h4>
+                    <p class="text-xs text-gray-600">Complete your first race</p>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">Completed</span>
+                </div>
+                <div class="achievement bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                        <i class="fa fa-trophy text-gray-400 text-3xl"></i>
+                    </div>
+                    <h4 class="font-bold">Speed Demon</h4>
+                    <p class="text-xs text-gray-600">Finish in under 30s</p>
+                    <span class="inline-block bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">Locked</span>
+                </div>
+                <div class="achievement bg-white rounded-xl p-4 shadow-md text-center">
+                    <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                        <i class="fa fa-gift text-gray-400 text-3xl"></i>
+                    </div>
+                    <h4 class="font-bold">Collector</h4>
+                    <p class="text-xs text-gray-600">Unlock all cars</p>
+                    <span class="inline-block bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded mt-1">Locked</span>
+                </div>
+            </div>
+            <button id="back-from-rewards-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                Back to Menu
+            </button>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen hidden flex flex-col items-center justify-center bg-background p-4 safe-area-inset">
+            <h2 class="text-4xl font-bold text-primary mb-6 text-shadow">设置</h2>
+            <div class="bg-white rounded-2xl p-6 shadow-lg max-w-md w-full mb-6">
+                <div class="mb-4">
+                    <label for="sound-toggle" class="flex justify-between items-center cursor-pointer">
+                        <span class="font-bold">Sound Effects</span>
+                        <div class="relative">
+                            <input type="checkbox" id="sound-toggle" class="sr-only" checked>
+                            <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="mb-4">
+                    <label for="music-toggle" class="flex justify-between items-center cursor-pointer">
+                        <span class="font-bold">Background Music</span>
+                        <div class="relative">
+                            <input type="checkbox" id="music-toggle" class="sr-only" checked>
+                            <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="mb-4">
+                    <label for="vibration-toggle" class="flex justify-between items-center cursor-pointer">
+                        <span class="font-bold">Vibration</span>
+                        <div class="relative">
+                            <input type="checkbox" id="vibration-toggle" class="sr-only" checked>
+                            <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                <div>
+                    <label for="difficulty" class="block font-bold mb-2">Difficulty</label>
+                    <select id="difficulty" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+            <button id="back-from-settings-btn" class="btn btn-bounce bg-gray-500 hover:bg-opacity-90 text-white text-xl py-3 px-6 rounded-full shadow-lg">
+                Back to Menu
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentScreen: 'loading',
+            selectedCar: 0,
+            score: 0,
+            highScore: 0,
+            time: 0,
+            bestTime: Infinity,
+            totalStars: 0,
+            racesCompleted: 0,
+            coins: 0,
+            ownedCars: [0, 1], // Red and Yellow cars are initially owned
+            settings: {
+                sound: true,
+                music: true,
+                vibration: true,
+                difficulty: 'medium'
+            },
+            isGameRunning: false,
+            isPaused: false,
+            powerUps: {
+                speedBoost: false,
+                shield: false
+            },
+            weather: 'sunny', // sunny, rainy
+            baseSpeed: 3,
+            maxSpeed: 15,
+            lastTime: 0,
+            lastScoreUpdate: 0
+        };
+
+        // Game assets
+        const assets = {
+            cars: [
+                { name: 'Red Racer', speed: 3, handling: 3, image: 'https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D' },
+                { name: 'Yellow Blitz', speed: 4, handling: 2, image: 'https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D' },
+                { name: 'Green Machine', speed: 5, handling: 1, image: 'https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D' },
+                { name: 'Blue Bolt', speed: 4, handling: 3, image: 'https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4bb1366777c2417dbbfe8595ef837b47~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683994&x-signature=XPTkMDqqNh%2Boc%2BeQ7kqWjGxFpwM%3D' }
+            ],
+            obstacles: [
+                { type: 'cone', image: 'https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/c10cc9a3366348a0bb78f6a59fb1f1a2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=oJO31VKVun8wuosBxAWcCDW2Leg%3D' },
+                { type: 'rock', image: 'https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/c10cc9a3366348a0bb78f6a59fb1f1a2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=oJO31VKVun8wuosBxAWcCDW2Leg%3D' },
+                { type: 'car', image: 'https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/c10cc9a3366348a0bb78f6a59fb1f1a2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=oJO31VKVun8wuosBxAWcCDW2Leg%3D' }
+            ],
+            powerUps: [
+                { type: 'speed', name: 'Speed Boost', image: 'https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/ec17589f84e5411f893281c1e2c3232c~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683975&x-signature=2BPwSlcHE2a9mX0m96xYgIa2gho%3D' },
+                { type: 'shield', name: 'Shield', image: 'https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/ec17589f84e5411f893281c1e2c3232c~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683975&x-signature=2BPwSlcHE2a9mX0m96xYgIa2gho%3D' }
+            ],
+            track: {
+                image: 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/9cdbb912f97c43ab86a4b49f5506646c~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026022615454331048280F0C2BEE809D9&rrcfp=f06b921b&x-expires=1774683971&x-signature=3ZrSUxdgDgnQm8HevTwAt4SXots%3D'
+            }
+        };
+
+        // Game variables
+        let canvas, ctx;
+        let gameLoop;
+        let startTime;
+        let lastTime = 0;
+        let carPosition = { x: 0, y: 0 };
+        let obstacles = [];
+        let powerUps = [];
+        let particles = [];
+        let keys = {};
+        let touchStartX = 0;
+        let touchCurrentX = 0;
+        let isTouching = false;
+        let roadOffset = 0;
+        let speed = 5;
+        let gameWidth, gameHeight;
+        let roadWidth;
+        let roadLeft, roadRight;
+        let obstacleSpawnRate = 100;
+        let powerUpSpawnRate = 300;
+        let frameCount = 0;
+        let scoreMultiplier = 1;
+        let powerUpDuration = 0;
+        let shieldDuration = 0;
+        let weatherParticles = [];
+        let clouds = [];
+        let isPaused = false;
+
+        // DOM Elements
+        const screens = {
+            loading: document.getElementById('loading-screen'),
+            mainMenu: document.getElementById('main-menu'),
+            carSelection: document.getElementById('car-selection'),
+            game: document.getElementById('game-screen'),
+            gameOver: document.getElementById('game-over'),
+            garage: document.getElementById('garage-screen'),
+            rewards: document.getElementById('rewards-screen'),
+            settings: document.getElementById('settings-screen')
+        };
+
+        // Initialize the game
+        function init() {
+            // Show loading screen
+            showScreen('loading');
+            
+            // Simulate loading assets
+            let progress = 0;
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            
+            const loadingInterval = setInterval(() => {
+                progress += 5;
+                loadingBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    loadingText.textContent = 'Loading game assets...';
+                } else if (progress < 60) {
+                    loadingText.textContent = 'Preparing tracks...';
+                } else if (progress < 90) {
+                    loadingText.textContent = 'Setting up cars...';
+                } else {
+                    loadingText.textContent = 'Almost ready!';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        showScreen('mainMenu');
+                        loadGameData();
+                        updateUI();
+                    }, 500);
+                }
+            }, 100);
+            
+            // Initialize event listeners
+            setupEventListeners();
+            
+            // Handle device orientation
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+            
+            // Handle pause/resume events
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            document.addEventListener('resume', handleResume);
+            document.addEventListener('pause', handlePause);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Main menu buttons
+            document.getElementById('start-game-btn').addEventListener('click', () => showScreen('carSelection'));
+            document.getElementById('garage-btn').addEventListener('click', () => showScreen('garage'));
+            document.getElementById('rewards-btn').addEventListener('click', () => showScreen('rewards'));
+            document.getElementById('settings-btn').addEventListener('click', () => showScreen('settings'));
+            
+            // Car selection buttons
+            document.getElementById('back-to-menu-btn').addEventListener('click', () => showScreen('mainMenu'));
+            document.getElementById('start-race-btn').addEventListener('click', startGame);
+            
+            // Game over buttons
+            document.getElementById('play-again-btn').addEventListener('click', startGame);
+            document.getElementById('back-to-menu-2-btn').addEventListener('click', () => showScreen('mainMenu'));
+            
+            // Garage button
+            document.getElementById('back-from-garage-btn').addEventListener('click', () => showScreen('mainMenu'));
+            
+            // Rewards button
+            document.getElementById('back-from-rewards-btn').addEventListener('click', () => showScreen('mainMenu'));
+            
+            // Settings button
+            document.getElementById('back-from-settings-btn').addEventListener('click', () => showScreen('mainMenu'));
+            
+            // Car selection
+            const carOptions = document.querySelectorAll('.car-option');
+            carOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    carOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    gameState.selectedCar = parseInt(option.dataset.car);
+                });
+            });
+            
+            // Toggle switches
+            const toggles = document.querySelectorAll('input[type="checkbox"]');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const dot = toggle.nextElementSibling.nextElementSibling;
+                    if (toggle.checked) {
+                        dot.classList.add('translate-x-6');
+                    } else {
+                        dot.classList.remove('translate-x-6');
+                    }
+                    
+                    // Update settings
+                    if (toggle.id === 'sound-toggle') {
+                        gameState.settings.sound = toggle.checked;
+                    } else if (toggle.id === 'music-toggle') {
+                        gameState.settings.music = toggle.checked;
+                    } else if (toggle.id === 'vibration-toggle') {
+                        gameState.settings.vibration = toggle.checked;
+                    }
+                    
+                    saveGameData();
+                });
+            });
+            
+            // Difficulty selection
+            document.getElementById('difficulty').addEventListener('change', (e) => {
+                gameState.settings.difficulty = e.target.value;
+                saveGameData();
+            });
+            
+            // Keyboard controls
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Touch controls
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchCurrentX = touchStartX;
+                isTouching = true;
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (isTouching) {
+                    touchCurrentX = e.touches[0].clientX;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            document.addEventListener('touchend', () => {
+                isTouching = false;
+            });
+            
+            // Game controls
+            document.getElementById('left-btn').addEventListener('touchstart', () => keys['ArrowLeft'] = true);
+            document.getElementById('left-btn').addEventListener('touchend', () => keys['ArrowLeft'] = false);
+            document.getElementById('right-btn').addEventListener('touchstart', () => keys['ArrowRight'] = true);
+            document.getElementById('right-btn').addEventListener('touchend', () => keys['ArrowRight'] = false);
+            
+            // Handle window resize
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Prevent default touch behaviors
+            document.addEventListener('touchmove', (e) => {
+                if (gameState.currentScreen === 'game') {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Handle back button on Android
+            document.addEventListener('backbutton', handleBackButton);
+        }
+
+        // Handle device orientation
+        function handleOrientation(event) {
+            if (gameState.currentScreen !== 'game' || !gameState.isGameRunning) return;
+            
+            // Get the rotation around the z-axis
+            const gamma = event.gamma;
+            
+            // Calculate car movement based on tilt
+            const moveAmount = gamma * 0.5;
+            carPosition.x += moveAmount;
+            
+            // Keep car on road
+            const carWidth = 80;
+            if (carPosition.x - carWidth / 2 < roadLeft) {
+                carPosition.x = roadLeft + carWidth / 2;
+                createParticles(carPosition.x, carPosition.y, 'left');
+            }
+            
+            if (carPosition.x + carWidth / 2 > roadRight) {
+                carPosition.x = roadRight - carWidth / 2;
+                createParticles(carPosition.x, carPosition.y, 'right');
+            }
+        }
+
+        // Handle visibility change
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                handlePause();
+            } else {
+                handleResume();
+            }
+        }
+
+        // Handle pause
+        function handlePause() {
+            if (gameState.isGameRunning && !isPaused) {
+                isPaused = true;
+                cancelAnimationFrame(gameLoop);
+                // Here you would typically pause any sounds
+            }
+        }
+
+        // Handle resume
+        function handleResume() {
+            if (gameState.isGameRunning && isPaused) {
+                isPaused = false;
+                lastTime = performance.now();
+                gameLoop = requestAnimationFrame(updateGame);
+                // Here you would typically resume any sounds
+            }
+        }
+
+        // Handle back button
+        function handleBackButton() {
+            if (gameState.currentScreen === 'game') {
+                // Pause game or show pause menu
+                handlePause();
+                // Here you would typically show a pause menu
+            } else if (gameState.currentScreen !== 'mainMenu') {
+                // Go back to previous screen
+                showScreen('mainMenu');
+            }
+        }
+
+        // Show a specific screen
+        function showScreen(screenName) {
+            // Hide all screens
+            Object.values(screens).forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // Show the selected screen
+            screens[screenName].classList.remove('hidden');
+            gameState.currentScreen = screenName;
+            
+            // If game screen is shown, initialize canvas
+            if (screenName === 'game') {
+                initCanvas();
+            }
+        }
+
+        // Initialize canvas
+        function initCanvas() {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            
+            resizeCanvas();
+            
+            // Initialize game objects
+            resetGame();
+        }
+
+        // Resize canvas to fit screen
+        function resizeCanvas() {
+            if (!canvas) return;
+            
+            gameWidth = window.innerWidth;
+            gameHeight = window.innerHeight;
+            
+            canvas.width = gameWidth;
+            canvas.height = gameHeight;
+            
+            // Calculate road dimensions
+            roadWidth = gameWidth * 0.7;
+            roadLeft = (gameWidth - roadWidth) / 2;
+            roadRight = roadLeft + roadWidth;
+            
+            // Update car position
+            carPosition = {
+                x: gameWidth / 2,
+                y: gameHeight - 150
+            };
+        }
+
+        // Start the game
+        function startGame() {
+            showScreen('game');
+            resetGame();
+            
+            // Set difficulty based on settings
+            switch (gameState.settings.difficulty) {
+                case 'easy':
+                    obstacleSpawnRate = 150;
+                    powerUpSpawnRate = 250;
+                    speed = 4;
+                    break;
+                case 'medium':
+                    obstacleSpawnRate = 100;
+                    powerUpSpawnRate = 300;
+                    speed = 5;
+                    break;
+                case 'hard':
+                    obstacleSpawnRate = 70;
+                    powerUpSpawnRate = 350;
+                    speed = 6;
+                    break;
+            }
+            
+            // Random weather
+            if (Math.random() > 0.7) {
+                gameState.weather = 'rainy';
+                createRain();
+            } else {
+                gameState.weather = 'sunny';
+                createClouds();
+            }
+            
+            // Start game loop
+            gameState.isGameRunning = true;
+            isPaused = false;
+            startTime = Date.now();
+            lastTime = performance.now();
+            gameLoop = requestAnimationFrame(updateGame);
+            
+            // Play engine sound
+            playSound('engine');
+        }
+
+        // Reset game state
+        function resetGame() {
+            gameState.score = 0;
+            gameState.time = 0;
+            gameState.powerUps = {
+                speedBoost: false,
+                shield: false
+            };
+            
+            carPosition = {
+                x: gameWidth / 2,
+                y: gameHeight - 150
+            };
+            
+            obstacles = [];
+            powerUps = [];
+            particles = [];
+            weatherParticles = [];
+            clouds = [];
+            
+            roadOffset = 0;
+            frameCount = 0;
+            scoreMultiplier = 1;
+            powerUpDuration = 0;
+            shieldDuration = 0;
+            
+            document.getElementById('score-display').textContent = '0';
+            document.getElementById('time-display').textContent = '00:00';
+            document.getElementById('speed-display').textContent = `${speed * 10} km/h`;
+            document.getElementById('powerup-indicator').classList.add('hidden');
+        }
+
+        // Update game state
+        function updateGame(timestamp) {
+            if (!gameState.isGameRunning || isPaused) return;
+            
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Update game time
+            gameState.time = Math.floor((Date.now() - startTime) / 1000);
+            updateTimeDisplay();
+            
+            // Update speed
+            let currentSpeed = speed;
+            if (gameState.powerUps.speedBoost) {
+                currentSpeed = speed * 1.5;
+                powerUpDuration--;
+                if (powerUpDuration <= 0) {
+                    gameState.powerUps.speedBoost = false;
+                    document.getElementById('powerup-indicator').classList.add('hidden');
+                }
+            }
+            
+            if (gameState.powerUps.shield) {
+                shieldDuration--;
+                if (shieldDuration <= 0) {
+                    gameState.powerUps.shield = false;
+                }
+            }
+            
+            // Update road offset
+            roadOffset += currentSpeed;
+            if (roadOffset >= gameHeight) {
+                roadOffset = 0;
+            }
+            
+            // Handle input
+            handleInput();
+            
+            // Spawn obstacles
+            if (frameCount % obstacleSpawnRate === 0) {
+                spawnObstacle();
+            }
+            
+            // Spawn power-ups
+            if (frameCount % powerUpSpawnRate === 0) {
+                spawnPowerUp();
+            }
+            
+            // Update obstacles
+            updateObstacles(currentSpeed);
+            
+            // Update power-ups
+            updatePowerUps(currentSpeed);
+            
+            // Update particles
+            updateParticles();
+            
+            // Update weather effects
+            updateWeather();
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Update score
+            gameState.score += Math.floor(currentSpeed * scoreMultiplier);
+            document.getElementById('score-display').textContent = gameState.score.toString();
+            document.getElementById('speed-display').textContent = `${Math.floor(currentSpeed * 10)} km/h`;
+            
+            // Render game
+            renderGame();
+            
+            frameCount++;
+            
+            // Continue game loop
+            if (gameState.isGameRunning && !isPaused) {
+                gameLoop = requestAnimationFrame(updateGame);
+            }
+        }
+
+        // Handle user input
+        function handleInput() {
+            // Keyboard controls
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                carPosition.x -= 10; // Increased speed for better responsiveness
+            }
+            
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                carPosition.x += 10; // Increased speed for better responsiveness
+            }
+            
+            // Touch controls - optimized for smoother movement
+            if (isTouching) {
+                const deltaX = touchCurrentX - touchStartX;
+                // Use exponential scaling for more responsive touch
+                const scaledDelta = deltaX * 0.15 * (Math.abs(deltaX) > 5 ? 1.5 : 1);
+                carPosition.x += scaledDelta;
+                touchStartX = touchCurrentX;
+            }
+            
+            // Keep car on road with smooth boundary handling
+            const carWidth = 80;
+            if (carPosition.x - carWidth / 2 < roadLeft) {
+                // Smooth bounce effect
+                carPosition.x = roadLeft + carWidth / 2 + 5;
+                createParticles(carPosition.x, carPosition.y, 'left');
+                
+                // Vibrate on collision
+                if (gameState.settings.vibration && navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+            
+            if (carPosition.x + carWidth / 2 > roadRight) {
+                // Smooth bounce effect
+                carPosition.x = roadRight - carWidth / 2 - 5;
+                createParticles(carPosition.x, carPosition.y, 'right');
+                
+                // Vibrate on collision
+                if (gameState.settings.vibration && navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        }
+
+        // Spawn obstacle
+        function spawnObstacle() {
+            const obstacleType = Math.floor(Math.random() * assets.obstacles.length);
+            const obstacle = {
+                type: obstacleType,
+                x: roadLeft + Math.random() * roadWidth,
+                y: -50,
+                width: 50,
+                height: 50,
+                speed: speed * (0.8 + Math.random() * 0.4)
+            };
+            
+            obstacles.push(obstacle);
+        }
+
+        // Spawn power-up
+        function spawnPowerUp() {
+            const powerUpType = Math.floor(Math.random() * assets.powerUps.length);
+            const powerUp = {
+                type: powerUpType,
+                x: roadLeft + Math.random() * roadWidth,
+                y: -50,
+                width: 50,
+                height: 50,
+                speed: speed * 0.8
+            };
+            
+            powerUps.push(powerUp);
+        }
+
+        // Update obstacles
+        function updateObstacles(currentSpeed) {
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.y += currentSpeed;
+                
+                // Remove obstacles that are off screen
+                if (obstacle.y > gameHeight) {
+                    obstacles.splice(i, 1);
+                    gameState.score += 10 * scoreMultiplier;
+                }
+            }
+        }
+
+        // Update power-ups
+        function updatePowerUps(currentSpeed) {
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                const powerUp = powerUps[i];
+                powerUp.y += currentSpeed;
+                
+                // Remove power-ups that are off screen
+                if (powerUp.y > gameHeight) {
+                    powerUps.splice(i, 1);
+                }
+            }
+        }
+
+        // Update particles
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // Update weather effects
+        function updateWeather() {
+            // Update rain
+            if (gameState.weather === 'rainy') {
+                // Add new raindrops
+                if (frameCount % 5 === 0) {
+                    createRaindrop();
+                }
+                
+                // Update existing raindrops
+                for (let i = weatherParticles.length - 1; i >= 0; i--) {
+                    const drop = weatherParticles[i];
+                    drop.y += drop.speed;
+                    
+                    if (drop.y > gameHeight) {
+                        weatherParticles.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Update clouds
+            for (let i = clouds.length - 1; i >= 0; i--) {
+                const cloud = clouds[i];
+                cloud.x += cloud.speed;
+                
+                if (cloud.x > gameWidth + cloud.width) {
+                    clouds.splice(i, 1);
+                }
+            }
+        }
+
+        // Create rain effect
+        function createRain() {
+            for (let i = 0; i < 50; i++) {
+                createRaindrop();
+            }
+        }
+
+        // Create a single raindrop
+        function createRaindrop() {
+            weatherParticles.push({
+                x: Math.random() * gameWidth,
+                y: -20,
+                width: 2,
+                height: 20,
+                speed: 10 + Math.random() * 5
+            });
+        }
+
+        // Create clouds
+        function createClouds() {
+            for (let i = 0; i < 5; i++) {
+                clouds.push({
+                    x: Math.random() * gameWidth - gameWidth,
+                    y: Math.random() * gameHeight * 0.5,
+                    width: 100 + Math.random() * 100,
+                    height: 50 + Math.random() * 30,
+                    speed: 0.2 + Math.random() * 0.3
+                });
+            }
+        }
+
+        // Check for collisions
+        function checkCollisions() {
+            const carWidth = 80;
+            const carHeight = 120;
+            
+            // Check collisions with obstacles
+            for (let i = 0; i < obstacles.length; i++) {
+                const obstacle = obstacles[i];
+                
+                if (
+                    carPosition.x + carWidth / 2 > obstacle.x - obstacle.width / 2 &&
+                    carPosition.x - carWidth / 2 < obstacle.x + obstacle.width / 2 &&
+                    carPosition.y + carHeight / 2 > obstacle.y - obstacle.height / 2 &&
+                    carPosition.y - carHeight / 2 < obstacle.y + obstacle.height / 2
+                ) {
+                    // Collision detected
+                    if (gameState.powerUps.shield) {
+                        // Shield protects from collision
+                        createPowerUpEffect(obstacle.x, obstacle.y);
+                        obstacles.splice(i, 1);
+                        gameState.score += 50;
+                        playSound('shield');
+                    } else {
+                        // Game over
+                        gameOver();
+                        return;
+                    }
+                }
+            }
+            
+            // Check collisions with power-ups
+            for (let i = 0; i < powerUps.length; i++) {
+                const powerUp = powerUps[i];
+                
+                if (
+                    carPosition.x + carWidth / 2 > powerUp.x - powerUp.width / 2 &&
+                    carPosition.x - carWidth / 2 < powerUp.x + powerUp.width / 2 &&
+                    carPosition.y + carHeight / 2 > powerUp.y - powerUp.height / 2 &&
+                    carPosition.y - carHeight / 2 < powerUp.y + powerUp.height / 2
+                ) {
+                    // Power-up collected
+                    collectPowerUp(powerUp);
+                    powerUps.splice(i, 1);
+                    gameState.score += 20;
+                    playSound('powerup');
+                }
+            }
+        }
+
+        // Collect power-up
+        function collectPowerUp(powerUp) {
+            const powerUpData = assets.powerUps[powerUp.type];
+            
+            // Show power-up indicator
+            const indicator = document.getElementById('powerup-indicator');
+            const icon = document.getElementById('powerup-icon');
+            const text = document.getElementById('powerup-text');
+            
+            icon.src = powerUpData.image;
+            text.textContent = powerUpData.name;
+            indicator.classList.remove('hidden');
+            
+            // Apply power-up effect
+            if (powerUp.type === 0) { // Speed boost
+                gameState.powerUps.speedBoost = true;
+                powerUpDuration = 120; // 10 seconds at 60fps
+            } else if (powerUp.type === 1) { // Shield
+                gameState.powerUps.shield = true;
+                shieldDuration = 180; // 15 seconds at 60fps
+            }
+            
+            // Create effect
+            createPowerUpEffect(powerUp.x, powerUp.y);
+            
+            // Vibrate on power-up collection
+            if (gameState.settings.vibration && navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+        }
+
+        // Create power-up effect
+        function createPowerUpEffect(x, y) {
+            const colors = ['#FFD700', '#00BFFF', '#FF69B4'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    size: 3 + Math.random() * 5,
+                    color: color,
+                    life: 30
+                });
+            }
+            
+            // Create pulse effect
+            const pulse = document.createElement('div');
+            pulse.className = 'powerup-effect';
+            pulse.style.left = `${x}px`;
+            pulse.style.top = `${y}px`;
+            pulse.style.width = '100px';
+            pulse.style.height = '100px';
+            pulse.style.backgroundColor = color;
+            pulse.style.opacity = '0.5';
+            
+            document.getElementById('game-screen').appendChild(pulse);
+            
+            setTimeout(() => {
+                pulse.remove();
+            }, 1000);
+        }
+
+        // Create particles for collision effects
+        function createParticles(x, y, direction) {
+            const colors = ['#FF6B35', '#4CB9E7', '#FFBE0B', '#FB5607'];
+            
+            for (let i = 0; i < 5; i++) {
+                let vx = (Math.random() - 0.5) * 5;
+                if (direction === 'left') {
+                    vx = -Math.abs(vx);
+                } else if (direction === 'right') {
+                    vx = Math.abs(vx);
+                }
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: vx,
+                    vy: (Math.random() - 0.5) * 5,
+                    size: 2 + Math.random() * 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 20
+                });
+            }
+        }
+
+        // Render game
+        function renderGame() {
+            // Clear canvas
+            ctx.clearRect(0, 0, gameWidth, gameHeight);
+            
+            // Draw sky
+            if (gameState.weather === 'rainy') {
+                ctx.fillStyle = '#708090';
+            } else {
+                ctx.fillStyle = '#87CEEB';
+            }
+            ctx.fillRect(0, 0, gameWidth, gameHeight);
+            
+            // Draw clouds
+            for (const cloud of clouds) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(cloud.x, cloud.y, cloud.height / 2, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width / 3, cloud.y - cloud.height / 4, cloud.height / 2, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width * 2 / 3, cloud.y, cloud.height / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw grass
+            ctx.fillStyle = '#7CFC00';
+            ctx.fillRect(0, 0, roadLeft, gameHeight);
+            ctx.fillRect(roadRight, 0, gameWidth - roadRight, gameHeight);
+            
+            // Draw road
+            ctx.fillStyle = '#333333';
+            ctx.fillRect(roadLeft, 0, roadWidth, gameHeight);
+            
+            // Draw road lines
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            
+            // Dashed center line
+            ctx.beginPath();
+            for (let y = roadOffset % 40; y < gameHeight; y += 40) {
+                ctx.moveTo(gameWidth / 2, y);
+                ctx.lineTo(gameWidth / 2, y + 20);
+            }
+            ctx.stroke();
+            
+            // Road edges
+            ctx.beginPath();
+            ctx.moveTo(roadLeft, 0);
+            ctx.lineTo(roadLeft, gameHeight);
+            ctx.moveTo(roadRight, 0);
+            ctx.lineTo(roadRight, gameHeight);
+            ctx.stroke();
+            
+            // Draw obstacles
+            for (const obstacle of obstacles) {
+                ctx.drawImage(
+                    assets.obstacles[obstacle.type].image,
+                    obstacle.x - obstacle.width / 2,
+                    obstacle.y - obstacle.height / 2,
+                    obstacle.width,
+                    obstacle.height
+                );
+            }
+            
+            // Draw power-ups
+            for (const powerUp of powerUps) {
+                ctx.drawImage(
+                    assets.powerUps[powerUp.type].image,
+                    powerUp.x - powerUp.width / 2,
+                    powerUp.y - powerUp.height / 2,
+                    powerUp.width,
+                    powerUp.height
+                );
+            }
+            
+            // Draw car
+            ctx.save();
+            
+            // Apply shield effect if active
+            if (gameState.powerUps.shield) {
+                ctx.globalAlpha = 0.8;
+                ctx.strokeStyle = '#00BFFF';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(carPosition.x, carPosition.y, 70, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Create and cache car image if not already loaded
+            if (!window.carImages) {
+                window.carImages = {};
+            }
+            
+            const carImage = window.carImages[gameState.selectedCar] || new Image();
+            if (!window.carImages[gameState.selectedCar]) {
+                carImage.src = assets.cars[gameState.selectedCar].image;
+                window.carImages[gameState.selectedCar] = carImage;
+            }
+            
+            // Draw car or placeholder if image not loaded yet
+            if (carImage.complete) {
+                ctx.drawImage(
+                    carImage,
+                    carPosition.x - 40,
+                    carPosition.y - 60,
+                    80,
+                    120
+                );
+            } else {
+                // Draw placeholder car
+                ctx.fillStyle = '#FF6B35';
+                ctx.fillRect(carPosition.x - 40, carPosition.y - 60, 80, 120);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(carPosition.x - 30, carPosition.y - 50, 60, 30);
+            }
+            
+            ctx.restore();
+            
+            // Draw particles
+            for (const particle of particles) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw rain
+            if (gameState.weather === 'rainy') {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 1;
+                
+                for (const drop of weatherParticles) {
+                    ctx.beginPath();
+                    ctx.moveTo(drop.x, drop.y);
+                    ctx.lineTo(drop.x + drop.width, drop.y + drop.height);
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw pause indicator if paused
+            if (isPaused) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, gameWidth, gameHeight);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('PAUSED', gameWidth / 2, gameHeight / 2);
+            }
+        }
+
+        // Update time display
+        function updateTimeDisplay() {
+            const minutes = Math.floor(gameState.time / 60);
+            const seconds = gameState.time % 60;
+            document.getElementById('time-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // End the game
+        function gameOver() {
+            gameState.isGameRunning = false;
+            cancelAnimationFrame(gameLoop);
+            
+            // Stop engine sound
+            stopSound('engine');
+            
+            // Play crash sound
+            playSound('crash');
+            
+            // Vibrate if enabled
+            if (gameState.settings.vibration && navigator.vibrate) {
+                navigator.vibrate(500);
+            }
+            
+            // Calculate stars
+            let stars = 0;
+            if (gameState.score >= 1000) stars = 5;
+            else if (gameState.score >= 800) stars = 4;
+            else if (gameState.score >= 600) stars = 3;
+            else if (gameState.score >= 400) stars = 2;
+            else if (gameState.score >= 200) stars = 1;
+            
+            // Calculate reward
+            const reward = stars * 10;
+            gameState.coins += reward;
+            
+            // Update statistics
+            gameState.racesCompleted++;
+            gameState.totalStars += stars;
+            
+            if (gameState.time < gameState.bestTime && gameState.time > 0) {
+                gameState.bestTime = gameState.time;
+            }
+            
+            // Check for car unlocks
+            let unlockedCar = -1;
+            if (gameState.coins >= 300 && !gameState.ownedCars.includes(3)) {
+                unlockedCar = 3; // Blue Bolt
+                gameState.ownedCars.push(3);
+            } else if (gameState.coins >= 500 && !gameState.ownedCars.includes(2)) {
+                unlockedCar = 2; // Green Machine
+                gameState.ownedCars.push(2);
+            }
+            
+            // Update UI
+            updateGameOverScreen(stars, reward, unlockedCar);
+            
+            // Save game data
+            saveGameData();
+            
+            // Show game over screen
+            setTimeout(() => {
+                showScreen('gameOver');
+                
+                // Create confetti
+                createConfetti();
+            }, 1000);
+        }
+
+        // Update game over screen
+        function updateGameOverScreen(stars, reward, unlockedCar) {
+            // Update stars
+            const starElements = document.querySelectorAll('#stars-container .star');
+            starElements.forEach((star, index) => {
+                if (index < stars) {
+                    star.classList.add('filled');
+                    star.classList.remove('empty');
+                } else {
+                    star.classList.remove('filled');
+                    star.classList.add('empty');
+                }
+            });
+            
+            // Update score and time
+            document.getElementById('final-score').textContent = gameState.score.toString();
+            
+            const minutes = Math.floor(gameState.time / 60);
+            const seconds = gameState.time % 60;
+            document.getElementById('final-time').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update reward
+            document.getElementById('final-reward').textContent = `${reward} coins`;
+            
+            // Update unlock notification
+            const unlockElement = document.getElementById('new-unlock');
+            if (unlockedCar >= 0) {
+                unlockElement.classList.remove('hidden');
+                document.getElementById('unlocked-car-img').src = assets.cars[unlockedCar].image;
+            } else {
+                unlockElement.classList.add('hidden');
+            }
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const confettiContainer = document.getElementById('game-over');
+            const colors = ['#FF6B35', '#4CB9E7', '#FFBE0B', '#FB5607', '#9B5DE5', '#00F5FF'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                
+                confettiContainer.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Update UI elements
+        function updateUI() {
+            // Update coins display
+            document.getElementById('coins-display').textContent = `${gameState.coins} coins`;
+            
+            // Update best time
+            if (gameState.bestTime !== Infinity) {
+                const minutes = Math.floor(gameState.bestTime / 60);
+                const seconds = gameState.bestTime % 60;
+                document.getElementById('best-time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // Update total stars
+            document.getElementById('total-stars').textContent = gameState.totalStars.toString();
+            
+            // Update races completed
+            document.getElementById('races-completed').textContent = gameState.racesCompleted.toString();
+            
+            // Update car cards in garage
+            const carCards = document.querySelectorAll('.car-card');
+            carCards.forEach((card, index) => {
+                if (gameState.ownedCars.includes(index)) {
+                    const img = card.querySelector('img');
+                    img.classList.remove('opacity-50');
+                    
+                    const badge = card.querySelector('span');
+                    badge.textContent = 'Owned';
+                    badge.classList.remove('bg-yellow-100', 'text-yellow-800');
+                    badge.classList.add('bg-green-100', 'text-green-800');
+                }
+            });
+            
+            // Update settings
+            document.getElementById('sound-toggle').checked = gameState.settings.sound;
+            document.getElementById('music-toggle').checked = gameState.settings.music;
+            document.getElementById('vibration-toggle').checked = gameState.settings.vibration;
+            document.getElementById('difficulty').value = gameState.settings.difficulty;
+            
+            // Update toggle switches
+            const toggles = document.querySelectorAll('input[type="checkbox"]');
+            toggles.forEach(toggle => {
+                const dot = toggle.nextElementSibling.nextElementSibling;
+                if (toggle.checked) {
+                    dot.classList.add('translate-x-6');
+                } else {
+                    dot.classList.remove('translate-x-6');
+                }
+            });
+        }
+
+        // Save game data to localStorage
+        function saveGameData() {
+            const gameData = {
+                ownedCars: gameState.ownedCars,
+                coins: gameState.coins,
+                bestTime: gameState.bestTime,
+                totalStars: gameState.totalStars,
+                racesCompleted: gameState.racesCompleted,
+                settings: gameState.settings
+            };
+            
+            localStorage.setItem('kidsRacingGame', JSON.stringify(gameData));
+        }
+
+        // Load game data from localStorage
+        function loadGameData() {
+            const savedData = localStorage.getItem('kidsRacingGame');
+            
+            if (savedData) {
+                const gameData = JSON.parse(savedData);
+                
+                if (gameData.ownedCars) gameState.ownedCars = gameData.ownedCars;
+                if (gameData.coins) gameState.coins = gameData.coins;
+                if (gameData.bestTime) gameState.bestTime = gameData.bestTime;
+                if (gameData.totalStars) gameState.totalStars = gameData.totalStars;
+                if (gameData.racesCompleted) gameState.racesCompleted = gameData.racesCompleted;
+                if (gameData.settings) gameState.settings = gameData.settings;
+            }
+        }
+
+        // Sound effects
+        const sounds = {
+            engine: null,
+            crash: null,
+            powerup: null,
+            shield: null
+        };
+
+        // Play sound
+        function playSound(soundName) {
+            if (!gameState.settings.sound) return;
+            
+            // In a real implementation, you would load and play actual sound files
+            // This is a placeholder for sound functionality
+            console.log(`Playing sound: ${soundName}`);
+        }
+
+        // Stop sound
+        function stopSound(soundName) {
+            // In a real implementation, you would stop the sound
+            console.log(`Stopping sound: ${soundName}`);
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+    <script>
+        // Cordova initialization
+        if (window.cordova) {
+            document.addEventListener('deviceready', onDeviceReady, false);
+        } else {
+            // Web environment fallback
+            onDeviceReady();
+        }
+
+        function onDeviceReady() {
+            console.log('设备准备就绪');
+            
+            // Set preferred orientation to landscape
+            if (screen.orientation) {
+                screen.orientation.lock('landscape').catch(function(error) {
+                    console.log('无法锁定屏幕方向:', error);
+                });
+            }
+            
+            // Keep screen awake
+            if (window.plugins && window.plugins.insomnia) {
+                window.plugins.insomnia.keepAwake();
+            }
+            
+            // Handle back button on Android
+            document.addEventListener('backbutton', handleBackButton, false);
+            
+            // Handle pause/resume events
+            document.addEventListener('pause', handlePause, false);
+            document.addEventListener('resume', handleResume, false);
+            
+            // Handle network status changes
+            document.addEventListener('online', handleOnline, false);
+            document.addEventListener('offline', handleOffline, false);
+        }
+
+        function handleBackButton() {
+            if (gameState.currentScreen === 'game') {
+                if (confirm('确定要退出游戏吗？')) {
+                    showScreen('mainMenu');
+                }
+            } else if (gameState.currentScreen !== 'mainMenu') {
+                showScreen('mainMenu');
+            }
+        }
+
+        function handlePause() {
+            if (gameState.isGameRunning) {
+                handleGamePause();
+            }
+        }
+
+        function handleResume() {
+            if (gameState.isGameRunning && gameState.isPaused) {
+                handleGameResume();
+            }
+        }
+
+        function handleOnline() {
+            showToast('网络已连接');
+        }
+
+        function handleOffline() {
+            showToast('网络连接断开');
+        }
+
+        function showToast(message) {
+            if (window.plugins && window.plugins.toast) {
+                window.plugins.toast.show(message, 'short', 'center');
+            } else {
+                console.log('Toast: ' + message);
+            }
+        }
+
+        // Add virtual controls for mobile
+        function addVirtualControls() {
+            const controlsContainer = document.createElement('div');
+            controlsContainer.id = 'virtual-controls';
+            controlsContainer.className = 'fixed bottom-4 left-0 right-0 flex justify-between px-4 z-50';
+            controlsContainer.style.pointerEvents = 'auto';
+
+            const leftButton = document.createElement('button');
+            leftButton.id = 'virtual-left';
+            leftButton.className = 'w-16 h-16 bg-primary bg-opacity-50 rounded-full flex items-center justify-center text-white text-3xl';
+            leftButton.innerHTML = '<i class="fa fa-arrow-left"></i>';
+
+            const rightButton = document.createElement('button');
+            rightButton.id = 'virtual-right';
+            rightButton.className = 'w-16 h-16 bg-primary bg-opacity-50 rounded-full flex items-center justify-center text-white text-3xl';
+            rightButton.innerHTML = '<i class="fa fa-arrow-right"></i>';
+
+            controlsContainer.appendChild(leftButton);
+            controlsContainer.appendChild(rightButton);
+            document.body.appendChild(controlsContainer);
+
+            // Virtual control state variables
+            window.virtualLeftPressed = false;
+            window.virtualRightPressed = false;
+
+            // Event listeners
+            leftButton.addEventListener('touchstart', () => { window.virtualLeftPressed = true; });
+            leftButton.addEventListener('touchend', () => { window.virtualLeftPressed = false; });
+            rightButton.addEventListener('touchstart', () => { window.virtualRightPressed = true; });
+            rightButton.addEventListener('touchend', () => { window.virtualRightPressed = false; });
+        }
+
+        // Modify handleInput to use virtual controls
+        const originalHandleInput = handleInput;
+        handleInput = function() {
+            // Handle virtual controls
+            if (window.virtualLeftPressed) {
+                carPosition.x -= 10;
+            }
+            if (window.virtualRightPressed) {
+                carPosition.x += 10;
+            }
+            
+            // Call original handleInput
+            originalHandleInput();
+        };
+
+        // Show virtual controls when game starts
+        const originalShowScreen = showScreen;
+        showScreen = function(screenName) {
+            originalShowScreen(screenName);
+            
+            if (screenName === 'game') {
+                setTimeout(addVirtualControls, 100);
+            } else {
+                // Remove virtual controls
+                const controls = document.getElementById('virtual-controls');
+                if (controls) {
+                    controls.remove();
+                }
+            }
+        };
+    </script>
+</html>

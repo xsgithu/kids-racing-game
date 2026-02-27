@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童赛车游戏 - 安装页面</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4CB9E7 0%, #FF6B35 100%);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .install-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .btn-install {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-install:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        .btn-install:active {
+            transform: translateY(-1px);
+        }
+        .btn-install::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+        .btn-install:hover::before {
+            left: 100%;
+        }
+        .device-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .qr-code {
+            border: 10px solid white;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="install-card w-full max-w-md p-8 text-center">
+        <div class="mb-8">
+            <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/474815b7721541fd84c4e50eebb37038~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260226163046D5AA96EDE39C5ECD76AE&rrcfp=f06b921b&x-expires=1774686736&x-signature=0orZ37CMtsY4iUnc6P25vYkpgFU%3D" 
+                 alt="儿童赛车游戏" 
+                 class="w-32 h-32 mx-auto mb-4 rounded-2xl shadow-lg">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">儿童赛车游戏</h1>
+            <p class="text-gray-600">适合5-12岁儿童的趣味赛车游戏</p>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">选择您的设备类型</h2>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Android 安装 -->
+                <div class="install-option">
+                    <div class="device-icon text-green-600">
+                        <i class="fa fa-android"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Android</h3>
+                    <p class="text-sm text-gray-600 mb-4">Android 5.0 及以上版本</p>
+                    <button id="android-install-btn" class="btn-install bg-green-600 text-white py-3 px-6 rounded-full font-semibold w-full flex items-center justify-center gap-2">
+                        <i class="fa fa-download"></i>
+                        下载 APK
+                    </button>
+                </div>
+
+                <!-- iOS 安装 -->
+                <div class="install-option">
+                    <div class="device-icon text-blue-600">
+                        <i class="fa fa-apple"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">iOS</h3>
+                    <p class="text-sm text-gray-600 mb-4">iOS 12.0 及以上版本</p>
+                    <button id="ios-install-btn" class="btn-install bg-blue-600 text-white py-3 px-6 rounded-full font-semibold w-full flex items-center justify-center gap-2">
+                        <i class="fa fa-arrow-right"></i>
+                        TestFlight
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">扫码安装</h2>
+            <div class="qr-code mx-auto w-48 h-48 bg-white flex items-center justify-center">
+                <div class="text-center text-gray-600">
+                    <i class="fa fa-qrcode text-5xl mb-2"></i>
+                    <p class="text-xs">扫描二维码<br>下载游戏</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions text-left mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">安装说明</h2>
+            <div class="space-y-3 text-sm text-gray-700">
+                <div class="flex items-start gap-2">
+                    <i class="fa fa-check-circle text-green-600 mt-1"></i>
+                    <span>点击上方对应设备的下载按钮</span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa fa-check-circle text-green-600 mt-1"></i>
+                    <span>Android 用户需要允许"安装来自未知来源的应用"</span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa fa-check-circle text-green-600 mt-1"></i>
+                    <span>iOS 用户需要通过 TestFlight 安装</span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa fa-check-circle text-green-600 mt-1"></i>
+                    <span>安装完成后点击桌面图标启动游戏</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Version Info -->
+        <div class="version-info text-sm text-gray-500">
+            <p>版本 1.0.0 | 更新日期: 2024-02-26</p>
+            <p class="mt-1">大小: 约 30MB</p>
+        </div>
+    </div>
+
+    <script>
+        // 模拟 APK 下载链接（实际使用时需要替换为真实的下载链接）
+        const ANDROID_DOWNLOAD_URL = 'https://example.com/downloads/kids_racing_game.apk';
+        const IOS_TESTFLIGHT_URL = 'https://testflight.apple.com/join/YourTestFlightLink';
+
+        // Android 安装按钮
+        document.getElementById('android-install-btn').addEventListener('click', function() {
+            showToast('正在准备下载...');
+            
+            // 检查是否在移动设备上
+            if (isMobileDevice()) {
+                // 在移动设备上直接下载
+                window.location.href = ANDROID_DOWNLOAD_URL;
+            } else {
+                // 在电脑上显示二维码或提示
+                showToast('请在 Android 设备上打开此页面下载');
+            }
+        });
+
+        // iOS 安装按钮
+        document.getElementById('ios-install-btn').addEventListener('click', function() {
+            showToast('正在跳转到 TestFlight...');
+            
+            if (isMobileDevice()) {
+                window.location.href = IOS_TESTFLIGHT_URL;
+            } else {
+                showToast('请在 iOS 设备上打开此页面');
+            }
+        });
+
+        // 检测是否为移动设备
+        function isMobileDevice() {
+            return (typeof window.orientation !== 'undefined') || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+
+        // 显示提示信息
+        function showToast(message) {
+            // 创建 toast 元素
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            toast.textContent = message;
+            
+            // 添加到页面
+            document.body.appendChild(toast);
+            
+            // 2秒后移除
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // 页面加载完成后显示欢迎信息
+        window.addEventListener('load', function() {
+            showToast('欢迎来到儿童赛车游戏安装页面！');
+        });
+    </script>
+</body>
+</html>

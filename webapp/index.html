@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="description" content="一个适合5-12岁儿童的趣味赛车游戏">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="儿童赛车">
+    <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+    <link rel="icon" href="icons/icon-192x192.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
+    <title>儿童赛车游戏</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFE5D9 0%, #FFCAD4 100%);
+            color: #4A4A4A;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            animation: bounce 2s infinite;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #FF6B35;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6B705C;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .features {
+            margin: 50px 0;
+            text-align: left;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            animation: slideInLeft 0.5s ease-out;
+        }
+        
+        .feature-item:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .feature-item:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #FF6B35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .feature-text {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .install-guide {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .install-guide h3 {
+            color: #FF6B35;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .install-steps {
+            text-align: left;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: #4ECDC4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .install-steps {
+            counter-reset: step-counter;
+        }
+        
+        .step p {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .game-container {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            position: relative;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFE5D9 0%, #FFCAD4 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #FF6B35;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: #FF6B35;
+            font-weight: 600;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载界面 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在准备游戏...</div>
+    </div>
+    
+    <!-- 主界面 -->
+    <div class="container" id="mainContainer">
+        <div class="logo">
+            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/006ef54c22a84e319917b5d738ef6de9~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260227075916FBF5F694D86E2284E89A&rrcfp=f06b921b&x-expires=1774742437&x-signature=7G6h58%2BzYT0SlLZAsJRopKT0nOE%3D" alt="儿童赛车游戏">
+        </div>
+        
+        <h1>儿童赛车游戏</h1>
+        <p class="subtitle">专为5-12岁小朋友设计的趣味赛车游戏，简单操作，无限乐趣！</p>
+        
+        <a href="#" class="btn btn-primary" id="startGameBtn">开始游戏</a>
+        <a href="#" class="btn btn-secondary" id="installBtn">添加到主屏幕</a>
+        
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🚗</div>
+                <div class="feature-text">多种可爱赛车选择</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-text">挑战高分，收集奖励</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-text">简单操作，轻松上手</div>
+            </div>
+        </div>
+        
+        <div class="install-guide">
+            <h3>如何安装到手机</h3>
+            <div class="install-steps">
+                <div class="step">
+                    <p>点击上方"添加到主屏幕"按钮</p>
+                </div>
+                <div class="step">
+                    <p>选择"添加到主屏幕"选项</p>
+                </div>
+                <div class="step">
+                    <p>点击"添加"确认安装</p>
+                </div>
+                <div class="step">
+                    <p>在主屏幕找到游戏图标，点击开始游戏！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏容器 -->
+    <div class="game-container" id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    
+    <script>
+        // 检查是否支持Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker 注册成功:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker 注册失败:', error);
+                    });
+            });
+        }
+        
+        // 游戏数据
+        const gameData = {
+            player: {
+                name: '',
+                selectedCar: 'blue',
+                score: 0,
+                highScore: 0
+            },
+            settings: {
+                soundEnabled: true,
+                vibrationEnabled: true
+            },
+            cars: {
+                blue: { unlocked: true, name: '蓝色赛车' },
+                red: { unlocked: false, name: '红色赛车', cost: 500 },
+                green: { unlocked: false, name: '绿色赛车', cost: 800 },
+                yellow: { unlocked: false, name: '黄色赛车', cost: 1200 }
+            }
+        };
+        
+        // 加载保存的游戏数据
+        function loadGameData() {
+            const saved = localStorage.getItem('kidsRacingGame');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameData.player = { ...gameData.player, ...data.player };
+                gameData.settings = { ...gameData.settings, ...data.settings };
+                gameData.cars = { ...gameData.cars, ...data.cars };
+            }
+        }
+        
+        // 保存游戏数据
+        function saveGameData() {
+            localStorage.setItem('kidsRacingGame', JSON.stringify({
+                player: gameData.player,
+                settings: gameData.settings,
+                cars: gameData.cars
+            }));
+        }
+        
+        // 初始化游戏
+        function initGame() {
+            loadGameData();
+            
+            const startGameBtn = document.getElementById('startGameBtn');
+            const installBtn = document.getElementById('installBtn');
+            const mainContainer = document.getElementById('mainContainer');
+            const gameContainer = document.getElementById('gameContainer');
+            const loading = document.getElementById('loading');
+            
+            // 开始游戏按钮
+            startGameBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // 显示加载界面
+                loading.style.display = 'flex';
+                
+                // 模拟游戏加载
+                setTimeout(() => {
+                    loading.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        mainContainer.style.display = 'none';
+                        gameContainer.style.display = 'block';
+                        
+                        // 启动游戏
+                        startGame();
+                    }, 500);
+                }, 2000);
+            });
+            
+            // 安装按钮
+            installBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // 检查是否支持PWA安装
+                if (window.deferredPrompt) {
+                    window.deferredPrompt.prompt();
+                    
+                    window.deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('用户接受了安装提示');
+                            installBtn.textContent = '已安装';
+                            installBtn.style.background = '#4CAF50';
+                        }
+                        window.deferredPrompt = null;
+                    });
+                } else {
+                    // 如果不支持PWA安装，显示安装指南
+                    alert('请按照下方的安装指南，将游戏添加到主屏幕！');
+                }
+            });
+            
+            // 检测是否可以安装PWA
+            let deferredPrompt;
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                window.deferredPrompt = deferredPrompt;
+            });
+            
+            // 检测是否已安装
+            window.addEventListener('appinstalled', () => {
+                installBtn.textContent = '已安装';
+                installBtn.style.background = '#4CAF50';
+                deferredPrompt = null;
+            });
+        }
+        
+        // 启动游戏
+        function startGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 游戏变量
+            let gameRunning = true;
+            let score = 0;
+            let speed = 5;
+            let obstacles = [];
+            let coins = [];
+            let lastObstacleTime = 0;
+            let lastCoinTime = 0;
+            
+            // 玩家汽车
+            const playerCar = {
+                x: canvas.width / 2 - 25,
+                y: canvas.height - 100,
+                width: 50,
+                height: 80,
+                speed: 8,
+                lane: 1 // 0: 左车道, 1: 中间, 2: 右车道
+            };
+            
+            // 车道位置
+            const lanes = [
+                canvas.width / 4 - 25,
+                canvas.width / 2 - 25,
+                canvas.width * 3 / 4 - 25
+            ];
+            
+            // 游戏循环
+            function gameLoop(timestamp) {
+                if (!gameRunning) return;
+                
+                // 清空画布
+                ctx.fillStyle = '#87CEEB';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制道路
+                drawRoad();
+                
+                // 生成障碍物
+                if (timestamp - lastObstacleTime > 1500) {
+                    generateObstacle();
+                    lastObstacleTime = timestamp;
+                }
+                
+                // 生成金币
+                if (timestamp - lastCoinTime > 2000) {
+                    generateCoin();
+                    lastCoinTime = timestamp;
+                }
+                
+                // 更新和绘制障碍物
+                updateObstacles();
+                
+                // 更新和绘制金币
+                updateCoins();
+                
+                // 更新和绘制玩家汽车
+                drawPlayerCar();
+                
+                // 检查碰撞
+                checkCollisions();
+                
+                // 绘制分数
+                drawScore();
+                
+                // 增加难度
+                if (score % 100 === 0 && score > 0) {
+                    speed += 0.5;
+                }
+                
+                requestAnimationFrame(gameLoop);
+            }
+            
+            // 绘制道路
+            function drawRoad() {
+                // 道路背景
+                ctx.fillStyle = '#333';
+                ctx.fillRect(canvas.width / 4 - 50, 0, canvas.width / 2 + 100, canvas.height);
+                
+                // 车道线
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([20, 15]);
+                
+                // 左车道线
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 4, 0);
+                ctx.lineTo(canvas.width / 4, canvas.height);
+                ctx.stroke();
+                
+                // 右车道线
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 3 / 4, 0);
+                ctx.lineTo(canvas.width * 3 / 4, canvas.height);
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制玩家汽车
+            function drawPlayerCar() {
+                ctx.fillStyle = gameData.player.selectedCar === 'blue' ? '#4ECDC4' : 
+                               gameData.player.selectedCar === 'red' ? '#FF6B35' :
+                               gameData.player.selectedCar === 'green' ? '#4CAF50' : '#FFD93D';
+                
+                // 汽车主体
+                ctx.fillRect(playerCar.x, playerCar.y, playerCar.width, playerCar.height);
+                
+                // 车轮
+                ctx.fillStyle = '#333';
+                ctx.fillRect(playerCar.x + 5, playerCar.y + playerCar.height - 10, 15, 10);
+                ctx.fillRect(playerCar.x + playerCar.width - 20, playerCar.y + playerCar.height - 10, 15, 10);
+                ctx.fillRect(playerCar.x + 5, playerCar.y + 10, 15, 10);
+                ctx.fillRect(playerCar.x + playerCar.width - 20, playerCar.y + 10, 15, 10);
+                
+                // 车窗
+                ctx.fillStyle = '#87CEEB';
+                ctx.fillRect(playerCar.x + 10, playerCar.y + 15, playerCar.width - 20, 30);
+            }
+            
+            // 生成障碍物
+            function generateObstacle() {
+                const lane = Math.floor(Math.random() * 3);
+                obstacles.push({
+                    x: lanes[lane],
+                    y: -50,
+                    width: 50,
+                    height: 50,
+                    speed: speed
+                });
+            }
+            
+            // 更新障碍物
+            function updateObstacles() {
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    const obstacle = obstacles[i];
+                    obstacle.y += obstacle.speed;
+                    
+                    // 绘制障碍物
+                    ctx.fillStyle = '#FF6B35';
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    
+                    // 移除超出屏幕的障碍物
+                    if (obstacle.y > canvas.height) {
+                        obstacles.splice(i, 1);
+                        score += 10;
+                    }
+                }
+            }
+            
+            // 生成金币
+            function generateCoin() {
+                const lane = Math.floor(Math.random() * 3);
+                coins.push({
+                    x: lanes[lane] + 20,
+                    y: -20,
+                    radius: 10,
+                    speed: speed - 1
+                });
+            }
+            
+            // 更新金币
+            function updateCoins() {
+                for (let i = coins.length - 1; i >= 0; i--) {
+                    const coin = coins[i];
+                    coin.y += coin.speed;
+                    
+                    // 绘制金币
+                    ctx.fillStyle = '#FFD93D';
+                    ctx.beginPath();
+                    ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 金币边框
+                    ctx.strokeStyle = '#FFA000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 移除超出屏幕的金币
+                    if (coin.y > canvas.height) {
+                        coins.splice(i, 1);
+                    }
+                }
+            }
+            
+            // 检查碰撞
+            function checkCollisions() {
+                // 检查与障碍物的碰撞
+                for (const obstacle of obstacles) {
+                    if (playerCar.x < obstacle.x + obstacle.width &&
+                        playerCar.x + playerCar.width > obstacle.x &&
+                        playerCar.y < obstacle.y + obstacle.height &&
+                        playerCar.y + playerCar.height > obstacle.y) {
+                        gameOver();
+                        return;
+                    }
+                }
+                
+                // 检查与金币的碰撞
+                for (let i = coins.length - 1; i >= 0; i--) {
+                    const coin = coins[i];
+                    const dx = playerCar.x + playerCar.width / 2 - coin.x;
+                    const dy = playerCar.y + playerCar.height / 2 - coin.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < playerCar.width / 2 + coin.radius) {
+                        coins.splice(i, 1);
+                        score += 50;
+                        
+                        // 震动反馈
+                        if (gameData.settings.vibrationEnabled && navigator.vibrate) {
+                            navigator.vibrate(100);
+                        }
+                    }
+                }
+            }
+            
+            // 绘制分数
+            function drawScore() {
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px Nunito';
+                ctx.textAlign = 'center';
+                ctx.fillText(`分数: ${score}`, canvas.width / 2, 40);
+            }
+            
+            // 游戏结束
+            function gameOver() {
+                gameRunning = false;
+                
+                // 更新最高分
+                if (score > gameData.player.highScore) {
+                    gameData.player.highScore = score;
+                    gameData.player.score = score;
+                    saveGameData();
+                }
+                
+                // 显示游戏结束界面
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 48px Nunito';
+                ctx.textAlign = 'center';
+                ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 60);
+                
+                ctx.font = '24px Nunito';
+                ctx.fillText(`最终分数: ${score}`, canvas.width / 2, canvas.height / 2);
+                ctx.fillText(`最高分: ${gameData.player.highScore}`, canvas.width / 2, canvas.height / 2 + 40);
+                
+                ctx.font = 'bold 20px Nunito';
+                ctx.fillText('点击屏幕重新开始', canvas.width / 2, canvas.height / 2 + 100);
+                
+                // 重新开始游戏
+                canvas.addEventListener('click', () => {
+                    resetGame();
+                }, { once: true });
+            }
+            
+            // 重置游戏
+            function resetGame() {
+                score = 0;
+                speed = 5;
+                obstacles = [];
+                coins = [];
+                playerCar.lane = 1;
+                playerCar.x = lanes[playerCar.lane];
+                gameRunning = true;
+                gameLoop(0);
+            }
+            
+            // 触摸控制
+            let touchStartX = 0;
+            
+            canvas.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touchX = e.touches[0].clientX;
+                const deltaX = touchX - touchStartX;
+                
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX > 0 && playerCar.lane < 2) {
+                        playerCar.lane++;
+                        playerCar.x = lanes[playerCar.lane];
+                    } else if (deltaX < 0 && playerCar.lane > 0) {
+                        playerCar.lane--;
+                        playerCar.x = lanes[playerCar.lane];
+                    }
+                    touchStartX = touchX;
+                }
+            });
+            
+            // 键盘控制
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && playerCar.lane > 0) {
+                    playerCar.lane--;
+                    playerCar.x = lanes[playerCar.lane];
+                } else if (e.key === 'ArrowRight' && playerCar.lane < 2) {
+                    playerCar.lane++;
+                    playerCar.x = lanes[playerCar.lane];
+                }
+            });
+            
+            // 开始游戏循环
+            gameLoop(0);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

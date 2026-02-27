@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童赛车游戏 - 下载页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: white;
+        }
+        
+        .download-btn.primary {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: white;
+        }
+        
+        .info-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 4px solid #FF6B35;
+        }
+        
+        .step-number {
+            font-weight: bold;
+            color: #FF6B35;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .download-btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/006ef54c22a84e319917b5d738ef6de9~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260227075916FBF5F694D86E2284E89A&rrcfp=f06b921b&x-expires=1774742437&x-signature=7G6h58%2BzYT0SlLZAsJRopKT0nOE%3D" alt="儿童赛车游戏">
+        </div>
+        
+        <h1>儿童赛车游戏</h1>
+        <p class="subtitle">专为5-12岁小朋友设计的趣味赛车游戏</p>
+        
+        <div class="info-box">
+            <h2>🎮 游戏特色</h2>
+            <p>• 简单的触摸滑动控制</p>
+            <p>• 多种可爱赛车选择</p>
+            <p>• 挑战高分，收集金币</p>
+            <p>• 支持离线游玩</p>
+            <p>• 安全无广告</p>
+        </div>
+        
+        <div class="info-box">
+            <h2>📥 下载方式</h2>
+            <div class="steps">
+                <div class="step">
+                    <span class="step-number">1. </span>将游戏文件上传到网络服务器
+                </div>
+                <div class="step">
+                    <span class="step-number">2. </span>获取游戏访问链接
+                </div>
+                <div class="step">
+                    <span class="step-number">3. </span>通过链接访问并安装游戏
+                </div>
+            </div>
+        </div>
+        
+        <h2>🔧 部署说明</h2>
+        <p>请参考部署指南文档进行操作</p>
+        
+        <a href="#" class="download-btn primary" onclick="alert('游戏文件路径：/home/user/vibecoding/workspace/kids_racing_game_mobile')">查看游戏文件</a>
+        <a href="#" class="download-btn" onclick="alert('请参考 deployment-guide.html 文档')">部署指南</a>
+    </div>
+    
+    <script>
+        // 简单的页面加载动画
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

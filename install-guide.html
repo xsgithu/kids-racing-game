@@ -4,42 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>儿童赛车游戏 - 安装指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #FFE5D9 0%, #FFCAD4 100%);
+            background: linear-gradient(135deg, #4CB9E7 0%, #FF6B35 100%);
             min-height: 100vh;
+            font-family: Arial, sans-serif;
         }
-        
-        .container {
-            background: white;
+        .guide-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        
-        h1 {
-            color: #FF6B35;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2rem;
+        .step-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
-        
-        .step {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border-left: 5px solid #4ECDC4;
+        .step-card:hover {
+            transform: translateX(10px);
+            border-left-color: #FF6B35;
         }
-        
         .step-number {
-            background: #FF6B35;
+            background: linear-gradient(135deg, #4CB9E7, #FF6B35);
             color: white;
             width: 40px;
             height: 40px;
@@ -48,109 +36,113 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin: 0 auto 15px;
-        }
-        
-        h3 {
-            color: #4ECDC4;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        p {
-            margin: 10px 0;
-            text-align: center;
-        }
-        
-        .device-specific {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e3f2fd;
-            border-radius: 10px;
-            border: 1px solid #2196f3;
-        }
-        
-        .device-specific h4 {
-            color: #2196f3;
-            margin-bottom: 10px;
-        }
-        
-        .note {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        
-        .note h4 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .btn {
-            display: block;
-            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-            color: white;
-            text-decoration: none;
-            padding: 15px 20px;
-            border-radius: 25px;
-            text-align: center;
-            font-weight: bold;
-            margin: 20px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+            font-size: 18px;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>儿童赛车游戏安装指南</h1>
-        
-        <div class="step">
-            <div class="step-number">1</div>
-            <h3>打开游戏网页</h3>
-            <p>使用手机浏览器访问游戏网页链接</p>
+<body class="flex items-center justify-center p-4">
+    <div class="guide-card w-full max-w-3xl p-8">
+        <div class="text-center mb-8">
+            <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/474815b7721541fd84c4e50eebb37038~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260226163046D5AA96EDE39C5ECD76AE&rrcfp=f06b921b&x-expires=1774686736&x-signature=0orZ37CMtsY4iUnc6P25vYkpgFU%3D" 
+                 alt="儿童赛车游戏" 
+                 class="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-lg">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">儿童赛车游戏</h1>
+            <p class="text-gray-600">HTML5 版本安装指南</p>
         </div>
-        
-        <div class="step">
-            <div class="step-number">2</div>
-            <h3>添加到主屏幕</h3>
-            
-            <div class="device-specific">
-                <h4>📱 iOS设备 (iPhone/iPad)</h4>
-                <p>1. 点击浏览器底部的"分享"按钮</p>
-                <p>2. 滑动找到并点击"添加到主屏幕"</p>
-                <p>3. 点击"添加"确认</p>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📱 安装方法</h2>
+            <p class="text-gray-700 mb-4">
+                这是一个 HTML5 游戏，可以直接在手机浏览器中运行，无需安装额外的应用程序。
+                请按照以下步骤操作：
+            </p>
+        </div>
+
+        <div class="space-y-6 mb-8">
+            <!-- 步骤1 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md flex gap-4">
+                <div class="step-number flex-shrink-0">1</div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">下载游戏文件</h3>
+                    <p class="text-gray-700">
+                        点击下方按钮下载游戏压缩包，然后解压到手机存储中。
+                    </p>
+                    <div class="mt-4">
+                        <a href="kids_racing_game.zip" class="bg-primary hover:bg-opacity-90 text-white py-2 px-6 rounded-full font-semibold inline-flex items-center gap-2 transition-all hover:shadow-lg">
+                            <i class="fa fa-download"></i>
+                            下载游戏文件
+                        </a>
+                    </div>
+                </div>
             </div>
-            
-            <div class="device-specific">
-                <h4>🤖 Android设备</h4>
-                <p>1. 点击浏览器右上角的"菜单"按钮 (三个点)</p>
-                <p>2. 选择"添加到主屏幕"或"安装"</p>
-                <p>3. 点击"添加"或"安装"确认</p>
+
+            <!-- 步骤2 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md flex gap-4">
+                <div class="step-number flex-shrink-0">2</div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">打开HTML文件</h3>
+                    <p class="text-gray-700">
+                        使用手机的文件管理器找到解压后的文件夹，点击 <code class="bg-gray-100 px-2 py-1 rounded">index.html</code> 文件。
+                    </p>
+                    <div class="mt-2 text-sm text-gray-600">
+                        💡 提示：如果文件管理器无法直接打开HTML文件，请选择"使用其他应用打开"，然后选择浏览器。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤3 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md flex gap-4">
+                <div class="step-number flex-shrink-0">3</div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">添加到主屏幕</h3>
+                    <p class="text-gray-700">
+                        为了方便下次访问，建议将游戏添加到手机主屏幕：
+                    </p>
+                    <ul class="mt-2 space-y-2 text-gray-700">
+                        <li><strong>Chrome浏览器：</strong> 点击右上角的菜单按钮 → "添加到主屏幕"</li>
+                        <li><strong>Safari浏览器：</strong> 点击底部的分享按钮 → "添加到主屏幕"</li>
+                        <li><strong>其他浏览器：</strong> 查看浏览器菜单中的类似选项</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 步骤4 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md flex gap-4">
+                <div class="step-number flex-shrink-0">4</div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">开始游戏！</h3>
+                    <p class="text-gray-700">
+                        现在您可以点击主屏幕上的游戏图标开始游玩了！游戏支持触摸控制和虚拟按钮控制。
+                    </p>
+                    <div class="mt-2 text-sm text-gray-600">
+                        🎮 控制方式：触摸屏幕左右滑动或使用屏幕底部的虚拟按钮
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="step">
-            <div class="step-number">3</div>
-            <h3>开始游戏</h3>
-            <p>在手机主屏幕上找到游戏图标</p>
-            <p>点击图标即可开始游戏！</p>
+
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-8">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">🔧 常见问题</h3>
+            <div class="space-y-3 text-gray-700">
+                <div>
+                    <strong>Q: 游戏无法打开怎么办？</strong><br>
+                    A: 请确保使用现代浏览器（如Chrome、Safari等），并检查文件是否完整下载。
+                </div>
+                <div>
+                    <strong>Q: 游戏运行卡顿怎么办？</strong><br>
+                    A: 请关闭其他正在运行的应用，或降低手机屏幕亮度以提高性能。
+                </div>
+                <div>
+                    <strong>Q: 如何保存游戏进度？</strong><br>
+                    A: 游戏会自动将进度保存在浏览器本地存储中，下次打开时会自动加载。
+                </div>
+            </div>
         </div>
-        
-        <div class="note">
-            <h4>💡 小贴士</h4>
-            <p>• 游戏支持离线玩，但首次需要网络连接</p>
-            <p>• 如果游戏运行不流畅，请关闭其他应用</p>
-            <p>• 定期访问游戏网页可获取最新版本</p>
+
+        <div class="text-center text-gray-600 text-sm">
+            <p>版本 1.0.0 | 更新日期: 2024-02-26</p>
+            <p class="mt-1">适合 5-12 岁儿童 | 无需网络连接，支持离线游玩</p>
         </div>
-        
-        <a href="index.html" class="btn">返回游戏</a>
     </div>
 </body>
 </html>

@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.kidsracing.game" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>儿童赛车游戏</name>
+    <description>一个适合5-12岁儿童的赛车游戏小程序</description>
+    <author email="dev@example.com" href="http://example.com">
+        Kids Racing Game Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <icon density="ldpi" src="res/icon/android/icon-36-ldpi.png" />
+        <icon density="mdpi" src="res/icon/android/icon-48-mdpi.png" />
+        <icon density="hdpi" src="res/icon/android/icon-72-hdpi.png" />
+        <icon density="xhdpi" src="res/icon/android/icon-96-xhdpi.png" />
+        <icon density="xxhdpi" src="res/icon/android/icon-144-xxhdpi.png" />
+        <icon density="xxxhdpi" src="res/icon/android/icon-192-xxxhdpi.png" />
+        <splash density="land-ldpi" src="res/screen/android/screen-ldpi-landscape.png" />
+        <splash density="land-mdpi" src="res/screen/android/screen-mdpi-landscape.png" />
+        <splash density="land-hdpi" src="res/screen/android/screen-hdpi-landscape.png" />
+        <splash density="land-xhdpi" src="res/screen/android/screen-xhdpi-landscape.png" />
+        <splash density="port-ldpi" src="res/screen/android/screen-ldpi-portrait.png" />
+        <splash density="port-mdpi" src="res/screen/android/screen-mdpi-portrait.png" />
+        <splash density="port-hdpi" src="res/screen/android/screen-hdpi-portrait.png" />
+        <splash density="port-xhdpi" src="res/screen/android/screen-xhdpi-portrait.png" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <icon height="29" src="res/icon/ios/icon-small.png" width="29" />
+        <icon height="40" src="res/icon/ios/icon-small-40.png" width="40" />
+        <icon height="58" src="res/icon/ios/icon-small-58.png" width="58" />
+        <icon height="60" src="res/icon/ios/icon-small-60.png" width="60" />
+        <icon height="76" src="res/icon/ios/icon-76.png" width="76" />
+        <icon height="80" src="res/icon/ios/icon-small-80.png" width="80" />
+        <icon height="87" src="res/icon/ios/icon-small-87.png" width="87" />
+        <icon height="120" src="res/icon/ios/icon-small-120.png" width="120" />
+        <icon height="152" src="res/icon/ios/icon-152.png" width="152" />
+        <icon height="167" src="res/icon/ios/icon-167.png" width="167" />
+        <icon height="180" src="res/icon/ios/icon-180.png" width="180" />
+        <icon height="1024" src="res/icon/ios/icon-1024.png" width="1024" />
+        <splash height="480" src="res/screen/ios/Default~iphone.png" width="320" />
+        <splash height="960" src="res/screen/ios/Default@2x~iphone.png" width="640" />
+        <splash height="1024" src="res/screen/ios/Default-Portrait~ipad.png" width="768" />
+        <splash height="2048" src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" />
+        <splash height="1136" src="res/screen/ios/Default-568h@2x~iphone.png" width="640" />
+        <splash height="1334" src="res/screen/ios/Default-667h.png" width="750" />
+        <splash height="2208" src="res/screen/ios/Default-736h.png" width="1242" />
+        <splash height="2436" src="res/screen/ios/Default-812h.png" width="1125" />
+        <splash height="2688" src="res/screen/ios/Default-896h.png" width="1242" />
+        <splash height="1792" src="res/screen/ios/Default-896h.png" width="828" />
+    </platform>
+    <preference name="Fullscreen" value="true" />
+    <preference name="Orientation" value="landscape" />
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#000000" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="DisableDeployOnAndroid" value="false" />
+    <preference name="android-minSdkVersion" value="22" />
+    <preference name="android-targetSdkVersion" value="33" />
+    <preference name="ios-CFBundleIdentifier" value="com.kidsracing.game" />
+    <preference name="ios-CFBundleDisplayName" value="儿童赛车" />
+    <preference name="ios-CFBundleName" value="KidsRacing" />
+    <preference name="ios-InfoPlist" value="Info.plist" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.5" />
+    <plugin name="cordova-plugin-splashscreen" spec="^6.0.2" />
+    <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
+    <plugin name="cordova-plugin-vibration" spec="^4.0.1" />
+    <plugin name="cordova-plugin-screen-orientation" spec="^3.0.2" />
+    <plugin name="cordova-plugin-insomnia" spec="^4.3.0" />
+    <plugin name="cordova-plugin-network-information" spec="^3.0.0" />
+    <plugin name="cordova-plugin-battery-status" spec="^2.0.3" />
+    <plugin name="cordova-plugin-x-toast" spec="^2.7.2" />
+</widget>
